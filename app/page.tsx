@@ -135,10 +135,10 @@ function deleteMeal(mealToDelete: Meal) {
 
 const todaysMeals = meals.filter((meal) => meal.date === today);
 
-const calorieGoal = 2400;
-const proteinGoal = 170;
-const carbsGoal = 250;
-const fatGoal = 70;
+const calorieGoal = 2100;
+const proteinGoal = 160;
+const carbsGoal = 200;
+const fatGoal = 50;
 
 const totalCalories = todaysMeals.reduce((sum, meal) => sum + meal.calories, 0);
 const totalProtein = todaysMeals.reduce((sum, meal) => sum + meal.protein, 0);
