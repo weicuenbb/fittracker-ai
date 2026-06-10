@@ -10,7 +10,7 @@ export async function POST(req: Request) {
     const { food } = await req.json();
 
     const response = await client.responses.create({
-      model: "gpt-4.1-mini",
+      model: "gpt-5.4-mini",
       input: `
 Estimate calories and macros for this meal:
 
