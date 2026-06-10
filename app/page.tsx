@@ -91,6 +91,7 @@ export default function Home() {
   carbs: data.carbs,
   fat: data.fat,
   loggedAt: new Date().toLocaleString(),
+  date: new Date().toLocaleDateString(),
 });
   } catch (error) {
     alert("Something went wrong. Check the terminal.");
