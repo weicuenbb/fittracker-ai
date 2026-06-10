@@ -6,6 +6,9 @@ type Meal = {
   name: string;
   calories: number;
   protein: number;
+  carbs?: number;
+  fat?: number;
+  loggedAt: string;
 };
 
 export default function Home() {
@@ -30,7 +33,7 @@ export default function Home() {
     localStorage.setItem("currentWeight", weight);
 
     const newHistory = [
-      `${new Date().toLocaleDateString()} - ${weight} kg`,
+      `${new Date().toLocaleString()} - ${weight} kg`,
       ...history,
     ];
 
@@ -60,10 +63,13 @@ export default function Home() {
     }
 
     setMealEstimate({
-      name: data.name,
-      calories: data.calories,
-      protein: data.protein,
-    });
+  name: data.name,
+  calories: data.calories,
+  protein: data.protein,
+  carbs: data.carbs,
+  fat: data.fat,
+  loggedAt: new Date().toLocaleString(),
+});
   } catch (error) {
     alert("Something went wrong. Check the terminal.");
   }
@@ -99,19 +105,35 @@ export default function Home() {
           Nutrition • Training • Progress
         </p>
 
-        <div className="grid grid-cols-2 gap-4 mb-5">
-          <div className="bg-zinc-900 rounded-[1.75rem] p-5">
-            <p className="text-zinc-500 text-sm">Calories</p>
-            <p className="text-3xl font-bold mt-2">{totalCalories}</p>
-            <p className="text-zinc-500 text-sm">kcal today</p>
-          </div>
+      <div className="grid grid-cols-2 gap-4 mb-5">
+  <div className="bg-zinc-900 rounded-[1.75rem] p-5">
+    <p className="text-zinc-500 text-sm">Calories</p>
+    <p className="text-3xl font-bold mt-2">{totalCalories}</p>
+    <p className="text-zinc-500 text-sm">kcal today</p>
+  </div>
 
-          <div className="bg-zinc-900 rounded-[1.75rem] p-5">
-            <p className="text-zinc-500 text-sm">Protein</p>
-            <p className="text-3xl font-bold mt-2">{totalProtein}g</p>
-            <p className="text-zinc-500 text-sm">target 170g</p>
-          </div>
-        </div>
+  <div className="bg-zinc-900 rounded-[1.75rem] p-5">
+    <p className="text-zinc-500 text-sm">Protein</p>
+    <p className="text-3xl font-bold mt-2">{totalProtein}g</p>
+    <p className="text-zinc-500 text-sm">target 140g</p>
+  </div>
+
+  <div className="bg-zinc-900 rounded-[1.75rem] p-5">
+    <p className="text-zinc-500 text-sm">Carbs</p>
+    <p className="text-3xl font-bold mt-2">
+      {meals.reduce((sum, meal) => sum + (meal.carbs || 0), 0)}g
+    </p>
+    <p className="text-zinc-500 text-sm">today</p>
+  </div>
+
+  <div className="bg-zinc-900 rounded-[1.75rem] p-5">
+    <p className="text-zinc-500 text-sm">Fat</p>
+    <p className="text-3xl font-bold mt-2">
+      {meals.reduce((sum, meal) => sum + (meal.fat || 0), 0)}g
+    </p>
+    <p className="text-zinc-500 text-sm">today</p>
+  </div>
+</div>
 
         <div className="bg-white text-black rounded-[2rem] p-6 mb-5">
           <p className="text-zinc-500 text-sm mb-2">AI Meal Logger</p>
@@ -178,8 +200,12 @@ export default function Home() {
                 <div key={index} className="bg-zinc-800 rounded-lg p-3">
                   <p>{meal.name}</p>
                   <p className="text-zinc-400 text-sm">
-                    {meal.calories} kcal • {meal.protein}g protein
-                  </p>
+  {meal.calories} kcal • {meal.protein}g protein • {meal.carbs}g carbs • {meal.fat}g fat
+</p>
+
+<p className="text-zinc-500 text-xs mt-1">
+  Logged at {meal.loggedAt}
+</p>
                 </div>
               ))}
             </div>
