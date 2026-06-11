@@ -29,7 +29,9 @@ export default function Home() {
   const [food, setFood] = useState("");
   const [mealEstimate, setMealEstimate] = useState<Meal | null>(null);
   const [meals, setMeals] = useState<Meal[]>([]);
-
+function getTodayKey() {
+  return new Date().toISOString().split("T")[0];
+}
   useEffect(() => {
     const savedWeight = localStorage.getItem("currentWeight");
     const savedHistory = localStorage.getItem("weightHistory");
@@ -45,7 +47,11 @@ export default function Home() {
 
   localStorage.setItem("currentWeight", weight);
 
-  const today = new Date().toLocaleDateString();
+  function getTodayKey() {
+  return new Date().toISOString().split("T")[0];
+}
+
+const today = getTodayKey();
   const now = new Date().toLocaleString();
 
   const newEntry = `${now} - ${weight} kg`;
@@ -91,7 +97,7 @@ export default function Home() {
   carbs: data.carbs,
   fat: data.fat,
   loggedAt: new Date().toLocaleString(),
-  date: new Date().toLocaleDateString(),
+  date: getTodayKey(),
 });
   } catch (error) {
     alert("Something went wrong. Check the terminal.");
@@ -103,7 +109,7 @@ export default function Home() {
 
   const mealWithDate = {
     ...mealEstimate,
-    date: new Date().toLocaleDateString(),
+    date: getTodayKey(),
     loggedAt: new Date().toLocaleString(),
   };
 
@@ -131,7 +137,7 @@ function deleteMeal(mealToDelete: Meal) {
   localStorage.setItem("meals", JSON.stringify(updatedMeals));
 }
 
-  const today = new Date().toLocaleDateString();
+ const today = getTodayKey();
 
 const todaysMeals = meals.filter((meal) => meal.date === today);
 
