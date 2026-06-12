@@ -312,34 +312,7 @@ const mealsByDate = meals.reduce((groups: Record<string, Meal[]>, meal) => {
           </button>
         </div>
 
-        <div className="bg-zinc-900 rounded-[1.75rem] p-5 mb-5">
-          <h2 className="text-lg font-semibold mb-3">Meals Today</h2>
-
-          {meals.length === 0 ? (
-            <p className="text-zinc-500">No meals logged yet</p>
-          ) : (
-            <div className="space-y-2">
-              {meals.map((meal, index) => (
-                <div key={index} className="bg-zinc-800 rounded-lg p-3">
-                  <p>{meal.name}</p>
-                  <p className="text-zinc-400 text-sm">
-  {meal.calories} kcal • {meal.protein}g protein • {meal.carbs}g carbs • {meal.fat}g fat
-</p>
-<button
-  onClick={() => deleteMeal(meal)}
-  className="mt-3 text-red-400 text-sm"
->
-  Delete
-</button>
-
-<p className="text-zinc-500 text-xs mt-1">
-  Logged at {meal.loggedAt}
-</p>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
+     
         <div className="bg-zinc-900 rounded-[1.75rem] p-5 mb-5">
   <h2 className="text-lg font-semibold mb-3">Meal History</h2>
 
