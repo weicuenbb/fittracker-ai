@@ -7,14 +7,28 @@ const client = new OpenAI({
 
 export async function POST(req: Request) {
   try {
-    const { food } = await req.json();
+    const { food, image } = await req.json();
 
-    const response = await client.responses.create({
-      model: "gpt-5.4-mini",
-      input: `
-Estimate calories and macros for this meal:
+    if (!food && !image) {
+      return NextResponse.json(
+        { error: "Food description or image is required" },
+        { status: 400 }
+      );
+    }
 
-${food}
+    const prompt = `
+Estimate calories and macros for this meal.
+
+Important:
+- If an image is provided, identify visible food items and estimate realistic portions.
+- If text is provided, use it to improve the estimate.
+- Assume Singapore/Malaysia hawker or restaurant portions unless the user says homemade.
+- Do not underestimate oils, sauces, rice, fried egg, hidden fats, or large portions.
+- For homemade food, use normal home-cooking portions and do not overinflate calories.
+- Return practical fitness-tracking estimates.
+
+Meal description:
+${food || "No text description provided."}
 
 Return ONLY raw JSON.
 
@@ -30,17 +44,41 @@ Example:
   "carbs": 70,
   "fat": 18
 }
-`,
+`;
+
+    const inputContent: any[] = [
+      {
+        type: "input_text",
+        text: prompt,
+      },
+    ];
+
+    if (image) {
+      inputContent.push({
+        type: "input_image",
+        image_url: image,
+      });
+    }
+
+    const response = await client.responses.create({
+      model: "gpt-5.4-mini",
+      input: [
+        {
+          role: "user",
+          content: inputContent,
+        },
+      ],
     });
 
-   const cleanedText = response.output_text
-  .replace(/```json/g, "")
-  .replace(/```/g, "")
-  .trim();
+    const cleanedText = response.output_text
+      .replace(/```json/g, "")
+      .replace(/```/g, "")
+      .trim();
 
-const data = JSON.parse(cleanedText);
+    const data = JSON.parse(cleanedText);
+
     return NextResponse.json(data);
-    } catch (error) {
+  } catch (error) {
     console.error("Estimate meal error:", error);
 
     return NextResponse.json(

@@ -25,6 +25,9 @@ export default function Home() {
   const [expandedDates, setExpandedDates] = useState<string[]>([]);
   const [weight, setWeight] = useState("");
   const [history, setHistory] = useState<string[]>([]);
+  const [image, setImage] = useState<string>("");
+const [imagePreview, setImagePreview] = useState<string>("");
+const [isEstimating, setIsEstimating] = useState(false);
 
   const [food, setFood] = useState("");
   const [mealEstimate, setMealEstimate] = useState<Meal | null>(null);
@@ -72,15 +75,17 @@ const today = getTodayKey();
 }
 
  async function estimateMeal() {
-  if (!food) return;
+  if (!food && !image) return;
 
   try {
+    setIsEstimating(true);
+
     const response = await fetch("/api/estimate-meal", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ food }),
+      body: JSON.stringify({ food, image }),
     });
 
     const data = await response.json();
@@ -91,16 +96,18 @@ const today = getTodayKey();
     }
 
     setMealEstimate({
-  name: data.name,
-  calories: data.calories,
-  protein: data.protein,
-  carbs: data.carbs,
-  fat: data.fat,
-  loggedAt: new Date().toLocaleString(),
-  date: getTodayKey(),
-});
+      name: data.name,
+      calories: data.calories,
+      protein: data.protein,
+      carbs: data.carbs,
+      fat: data.fat,
+      loggedAt: new Date().toLocaleString(),
+      date: getTodayKey(),
+    });
   } catch (error) {
-    alert("Something went wrong. Check the terminal.");
+    alert("Something went wrong. Check terminal.");
+  } finally {
+    setIsEstimating(false);
   }
 }
 
@@ -120,6 +127,8 @@ const today = getTodayKey();
 
   setFood("");
   setMealEstimate(null);
+  setImage("");
+setImagePreview("");
 
   alert("Meal saved!");
 }
@@ -267,13 +276,38 @@ const mealsByDate = meals.reduce((groups: Record<string, Meal[]>, meal) => {
             onChange={(e) => setFood(e.target.value)}
             className="w-full text-2xl font-semibold outline-none placeholder:text-zinc-300"
           />
+<input
+  type="file"
+  accept="image/*"
+  onChange={(e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
 
+    const reader = new FileReader();
+
+    reader.onloadend = () => {
+      setImage(reader.result as string);
+      setImagePreview(reader.result as string);
+    };
+
+    reader.readAsDataURL(file);
+  }}
+  className="mt-3"
+/>
+{imagePreview && (
+  <img
+    src={imagePreview}
+    alt="Meal preview"
+    className="mt-3 rounded-2xl w-full max-h-64 object-cover"
+  />
+)}
           <button
-            onClick={estimateMeal}
-            className="mt-5 w-full bg-black text-white rounded-full py-3 font-semibold"
-          >
-            Estimate Macros
-          </button>
+  onClick={estimateMeal}
+  disabled={isEstimating}
+  className="mt-5 w-full bg-black text-white rounded-full py-3 font-semibold disabled:opacity-50"
+>
+  {isEstimating ? "Estimating..." : "Estimate Macros"}
+</button>
 
           {mealEstimate && (
             <div className="mt-5 bg-zinc-100 rounded-2xl p-4">
@@ -417,8 +451,8 @@ const dateFat = dateMeals.reduce(
         </div>
       </div>
 
-     <div className="h-56 mt-4">
-  <ResponsiveContainer width="100%" height="100%">
+     <div className="h-56 mt-4 w-full min-w-0">
+  <ResponsiveContainer width="100%" height={224}>
     <LineChart data={weightChartData}>
       <XAxis
         dataKey="date"
