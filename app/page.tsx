@@ -33,7 +33,9 @@ const [isEstimating, setIsEstimating] = useState(false);
   const [mealEstimate, setMealEstimate] = useState<Meal | null>(null);
   const [meals, setMeals] = useState<Meal[]>([]);
 function getTodayKey() {
-  return new Date().toISOString().split("T")[0];
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Singapore",
+  }).format(new Date());
 }
   useEffect(() => {
     const savedWeight = localStorage.getItem("currentWeight");
@@ -50,9 +52,7 @@ function getTodayKey() {
 
   localStorage.setItem("currentWeight", weight);
 
-  function getTodayKey() {
-  return new Date().toISOString().split("T")[0];
-}
+ 
 
 const today = getTodayKey();
   const now = new Date().toLocaleString();
