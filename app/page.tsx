@@ -95,15 +95,20 @@ const today = getTodayKey();
       return;
     }
 
-    setMealEstimate({
-      name: data.name,
-      calories: data.calories,
-      protein: data.protein,
-      carbs: data.carbs,
-      fat: data.fat,
-      loggedAt: new Date().toLocaleString(),
-      date: getTodayKey(),
-    });
+    const calculatedCalories =
+  data.protein * 4 +
+  data.carbs * 4 +
+  data.fat * 9;
+
+setMealEstimate({
+  name: data.name,
+  calories: Math.round(calculatedCalories),
+  protein: data.protein,
+  carbs: data.carbs,
+  fat: data.fat,
+  loggedAt: new Date().toLocaleString(),
+  date: getTodayKey(),
+});
   } catch (error) {
     alert("Something went wrong. Check terminal.");
   } finally {
